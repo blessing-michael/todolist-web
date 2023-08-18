@@ -85,7 +85,7 @@ const addToList = () => {
 
 const deleteList = (taskIndex) => {
   const deleteConfirmCheck = window.confirm(`Are you sure you want to delete ${tasks[taskIndex].desc}`);
-  if (deleteConfirmCheck ) {
+  if (deleteConfirmCheck) {
     deleteTask(taskIndex);
     updateDisplayUI();
   } else {
@@ -135,4 +135,3 @@ const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearTickedTasks);
 
 updateDisplayUI();
-
