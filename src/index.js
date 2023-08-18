@@ -27,7 +27,7 @@ const showTasks = (tasks) => {
       task.completed = checkbox.checked;
       listdis.className = task.completed ? 'task-itemlist completed' : 'task-itemlist';
       updateLocalStorage();
-      updateTaskStat(task); 
+      updateTaskStat(task);
     });
 
     const label = document.createElement('label');
@@ -75,7 +75,7 @@ const showTasks = (tasks) => {
     ellipIcon.className = 'fas fa-ellipsis-v ellipsis-icon';
     ellipIcon.addEventListener('click', () => {
       deleteIcon.style.display = 'inline';
-      ellipIcon.style.display = 'none'; 
+      ellipIcon.style.display = 'none';
     });
 
     listdis.appendChild(checkbox);
