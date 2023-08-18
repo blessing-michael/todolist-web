@@ -53,7 +53,7 @@
 - **[A button that removes the book from the library]**
 - **[A button that adds books to the screen]**
 - **[Added local storage to the project]**
-jjj
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
