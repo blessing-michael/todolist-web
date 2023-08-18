@@ -135,4 +135,4 @@ const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearTickedTasks);
 
 updateDisplayUI();
-jj
+
