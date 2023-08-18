@@ -107,14 +107,13 @@ const clearTickedTasks = () => {
       deleteTask(i);
     }
   }
-  saveTasksToLocalStorage(); 
+  saveTasksToLocalStorage();
   updateDisplayUI();
 };
 
-const addButton = document.getElementById('addBtn')
-const listDisplay = document.getElementById('list')
-addButton.addEventListener('click', addToList)
-
+const addButton = document.getElementById('addBtn');
+const listDisplay = document.getElementById('list');
+addButton.addEventListener('click', addToList);
 
 listDisplay.addEventListener('click', (event) => {
   const { target } = event;
@@ -132,7 +131,7 @@ listDisplay.addEventListener('click', (event) => {
   }
 });
 
-const clearButton = document.getElementById('clearButton')
+const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearTickedTasks);
 
 updateDisplayUI();
