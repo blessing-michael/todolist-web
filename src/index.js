@@ -133,6 +133,5 @@ listDisplay.addEventListener('click', (event) => {
 
 const clearButton = document.getElementById('clearButton');
 clearButton.addEventListener('click', clearTickedTasks);
-listitem.addEventListener('click', deleteme)
 
 updateDisplayUI();
