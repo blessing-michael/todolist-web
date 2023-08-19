@@ -1,137 +1,123 @@
 import './style.css';
 
-const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+import {
+  clearCompleted,
+  addTasktoList,
+} from './add.js';
+import updateTaskStat from './interaction.js';
 
-const saveTasksToLocalStorage = () => {
+let tasks = [];
+
+const updateLocalStorage = () => {
   localStorage.setItem('tasks', JSON.stringify(tasks));
 };
 
-const addTask = (desc) => {
-  const newTask = {
-    desc,
-    completed: false,
-    index: tasks.length + 1,
-  };
-  tasks.push(newTask);
-  saveTasksToLocalStorage();
-};
+const showTasks = (tasks) => {
+  const todoList = document.getElementById('todo-list');
+  todoList.innerHTML = '';
 
-const deleteTask = (taskIndex) => {
-  tasks.splice(taskIndex, 1);
-  tasks.forEach((task, index) => {
-    task.index = index + 1;
-  });
-  saveTasksToLocalStorage();
-};
-
-const editTask = (taskIndex, newDesc) => {
-  tasks[taskIndex].desc = newDesc;
-  saveTasksToLocalStorage();
-};
-
-const tickCompleted = (taskIndex) => {
-  tasks[taskIndex].completed = !tasks[taskIndex].completed;
-  saveTasksToLocalStorage();
-};
-
-const filterList = (y) => {
-  if (y) {
-    if (y.length >= 3) {
-      return y;
-    }
-    alert('Please ensure you enter more than 3 words');
-    return false;
-  }
-  return false;
-};
-
-const updateDisplayUI = () => {
-  const list = document.getElementById('list');
-  list.innerHTML = '';
   tasks.forEach((task) => {
-    const listItem = document.createElement('li');
-    listItem.classList.add('my-4', 'py-4', 'shadow', 'list-group-item');
-    listItem.id = `list${task.index}`;
+    const listdis = document.createElement('li');
+    listdis.className = 'task-itemlist';
 
-    const showListItem = `
-      <div class="row  list-div">
-        <div class="col-2">
-          <input class="" type="checkbox" id="check${task.index}" ${task.completed ? 'checked' : ''}>
-        </div>
-        <div class="col-4">
-          <span class="h4 ${task.completed ? 'text-decoration-line-through' : ''}" id="text${task.index}">${task.desc}</span>
-        </div>
-        <div class="col-3">
-          <button class="btn btn-secondary" data-action="delete" data-task-index="${task.index - 1}">Delete</button>
-          <button class="btn btn-secondary" data-action="edit" data-task-index="${task.index - 1}">Edit</button>
-        </div>
-      </div>
-    `;
+    const checkbox = document.createElement('input');
+    checkbox.setAttribute('type', 'checkbox');
+    checkbox.checked = task.completed;
+    checkbox.addEventListener('change', () => {
+      task.completed = checkbox.checked;
+      listdis.className = task.completed ? 'task-itemlist completed' : 'task-itemlist';
+      updateLocalStorage();
+      updateTaskStat(task);
+    });
 
-    listItem.innerHTML = showListItem;
-    list.appendChild(listItem);
+    const label = document.createElement('label');
+    const descriptionSpan = document.createElement('span');
+    descriptionSpan.innerText = task.description;
+
+    const editInput = document.createElement('input');
+    editInput.setAttribute('type', 'text');
+    editInput.className = 'edit-input';
+    editInput.style.display = 'none';
+    editInput.value = task.description;
+    editInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        descriptionSpan.innerText = editInput.value.trim();
+        task.description = editInput.value.trim();
+        editInput.style.display = 'none';
+        descriptionSpan.style.display = 'inline';
+        updateLocalStorage();
+      }
+    });
+
+    label.appendChild(descriptionSpan);
+    label.appendChild(editInput);
+
+    label.addEventListener('click', () => {
+      descriptionSpan.style.display = 'none';
+      editInput.style.display = 'inline';
+      editInput.focus();
+    });
+
+    const deleteIcon = document.createElement('i');
+    deleteIcon.className = 'fas fa-trash delete-icon';
+    deleteIcon.style.display = 'none';
+
+    deleteIcon.addEventListener('click', () => {
+      const taskIndex = tasks.findIndex((t) => t.id === task.id);
+      if (taskIndex !== -1) {
+        tasks.splice(taskIndex, 1);
+        updateLocalStorage();
+        showTasks(tasks);
+      }
+    });
+
+    const ellipIcon = document.createElement('i');
+    ellipIcon.className = 'fas fa-ellipsis-v ellipsis-icon';
+    ellipIcon.addEventListener('click', () => {
+      deleteIcon.style.display = 'inline';
+      ellipIcon.style.display = 'none';
+    });
+
+    listdis.appendChild(checkbox);
+    listdis.appendChild(label);
+    listdis.appendChild(ellipIcon);
+    listdis.appendChild(deleteIcon);
+    todoList.appendChild(listdis);
   });
 };
 
-const addToList = () => {
-  const input = document.getElementById('inputText');
-  const inputText = filterList(input.value);
-  if (inputText) {
-    addTask(inputText);
-    updateDisplayUI();
-    input.value = '';
+const reloadTasks = () => {
+  const storedTasks = localStorage.getItem('tasks');
+  if (storedTasks) {
+    tasks = JSON.parse(storedTasks);
+    showTasks(tasks);
   }
 };
 
-const deleteList = (taskIndex) => {
-  const deleteConfirmCheck = window.confirm(`Are you sure you want to delete ${tasks[taskIndex].desc}`);
-  if (deleteConfirmCheck) {
-    deleteTask(taskIndex);
-    updateDisplayUI();
-  } else {
-    console.log('cancelled');
-  }
-};
+const refreshIcon = document.getElementById('refresh-icon');
+refreshIcon.addEventListener('click', () => {
+  showTasks(tasks);
+});
 
-const editList = (taskIndex) => {
-  const currentText = tasks[taskIndex].desc;
-  const newText = prompt('Are you sure you want to Change list?', currentText);
-  if (filterList(newText)) {
-    editTask(taskIndex, newText);
-    updateDisplayUI();
-  }
-};
-const clearTickedTasks = () => {
-  for (let i = tasks.length - 1; i >= 0; i -= 1) {
-    if (tasks[i].completed) {
-      deleteTask(i);
-    }
-  }
-  saveTasksToLocalStorage();
-  updateDisplayUI();
-};
-
-const addButton = document.getElementById('addBtn');
-const listDisplay = document.getElementById('list');
-addButton.addEventListener('click', addToList);
-
-listDisplay.addEventListener('click', (event) => {
-  const { target } = event;
-  if (target.matches('[data-action="delete"]')) {
-    const taskIndex = parseInt(target.getAttribute('data-task-index'), 10);
-    deleteList(taskIndex);
-  } else if (target.matches('[data-action="edit"]')) {
-    const taskIndex = parseInt(target.getAttribute('data-task-index'), 10);
-    editList(taskIndex);
-  } else if (target.matches('[type="checkbox"]')) {
-    const taskIndex = parseInt(target.id.replace('check', ''), 10) - 1;
-    tickCompleted(taskIndex);
-    saveTasksToLocalStorage();
-    updateDisplayUI();
+const addIcon = document.getElementById('add-icon');
+addIcon.addEventListener('click', () => {
+  const taskInput = document.getElementById('task-input');
+  const description = taskInput.value.trim();
+  if (description) {
+    tasks = addTasktoList(tasks, description);
+    taskInput.value = '';
+    updateLocalStorage();
+    showTasks(tasks);
   }
 });
 
-const clearButton = document.getElementById('clearButton');
-clearButton.addEventListener('click', clearTickedTasks);
+const clearButton = document.getElementById('clear-button');
+clearButton.addEventListener('click', () => {
+  tasks = clearCompleted(tasks);
+  updateLocalStorage();
+  showTasks(tasks);
+});
 
-updateDisplayUI();
+window.addEventListener('load', reloadTasks);
+
+showTasks(tasks);
